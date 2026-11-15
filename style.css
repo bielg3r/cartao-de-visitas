@@ -10,23 +10,27 @@
   --borda: #1c2742;
   --texto: #e4eaf4;
   --texto-suave: #8d9ab3;
-  --neon: #4a9eff;          /* azul neon, um pouco apagado de propósito */
+  --neon: #4a9eff;
   --neon-brilho: rgba(74, 158, 255, 0.28);
   --neon-fraco: rgba(74, 158, 255, 0.10);
 
   --fonte-titulo: "Sora", system-ui, sans-serif;
   --fonte-texto: "Manrope", system-ui, sans-serif;
+  --fonte-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Ângulo animado da borda do terminal */
+@property --angulo {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
-html {
-  color-scheme: dark;
-}
+html { color-scheme: dark; }
 
 body {
   margin: 0;
@@ -49,73 +53,109 @@ main {
   flex: 1;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   margin: 0;
   font-family: var(--fonte-titulo);
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-p {
-  margin: 0;
+p { margin: 0; }
+a { color: var(--neon); }
+:focus-visible { outline: 2px solid var(--neon); outline-offset: 3px; }
+
+/* ---------- Terminal (Sobre) ---------- */
+
+.terminal {
+  border: 2px solid transparent;
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(var(--superficie), var(--superficie)) padding-box,
+    conic-gradient(from var(--angulo), transparent 0 55%, var(--neon) 80%, transparent 100%) border-box,
+    linear-gradient(var(--borda), var(--borda)) border-box;
+  box-shadow: 0 0 36px var(--neon-fraco);
+  animation: girar 7s linear infinite;
+  overflow: hidden;
 }
 
-a {
-  color: var(--neon);
+@keyframes girar {
+  to { --angulo: 360deg; }
 }
 
-:focus-visible {
-  outline: 2px solid var(--neon);
-  outline-offset: 3px;
-}
-
-/* ---------- Cartão (Sobre) ---------- */
-
-.cartao {
+.terminal-barra {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  padding: 2.5rem;
-  background: var(--superficie);
-  border: 1px solid var(--neon);
-  border-radius: 1.25rem;
-  box-shadow:
-    0 0 0 4px var(--neon-fraco),
-    0 0 36px var(--neon-brilho);
+  gap: 0.45rem;
+  padding: 0.8rem 1.1rem;
+  border-bottom: 1px solid var(--borda);
 }
 
-.avatar {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 6.5rem;
-  height: 6.5rem;
-  border: 2px solid var(--neon);
+.bolinha {
+  width: 0.7rem;
+  height: 0.7rem;
   border-radius: 50%;
-  background: var(--fundo);
-  color: var(--neon);
-  font-family: var(--fonte-titulo);
-  font-size: 1.9rem;
-  font-weight: 700;
-  box-shadow: 0 0 18px var(--neon-brilho);
+  background: var(--borda);
 }
 
-.cartao h1 {
+.bolinha:first-child { background: var(--neon); box-shadow: 0 0 8px var(--neon-brilho); }
+
+.terminal-titulo {
+  margin-left: 0.6rem;
+  color: var(--texto-suave);
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+}
+
+.terminal-corpo { padding: 1.75rem 2rem 2.25rem; }
+
+.comando {
+  margin-top: 1.5rem;
+  color: var(--texto-suave);
+  font-family: var(--fonte-mono);
+  font-size: 0.9rem;
+}
+
+.comando:first-child { margin-top: 0; }
+.prompt { color: var(--neon); }
+
+.terminal h1 {
+  margin-top: 0.35rem;
   font-size: clamp(1.9rem, 5vw, 2.6rem);
 }
 
-.curso {
-  margin-top: 0.4rem;
-  color: var(--texto-suave);
+.saida {
+  margin-top: 0.35rem;
+  font-family: var(--fonte-mono);
+  font-size: clamp(0.85rem, 3.6vw, 1.05rem);
+}
+
+/* Efeito de digitação */
+.digitando {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  border-right: 2px solid var(--neon);
+  animation:
+    digitar 2.2s steps(var(--letras)) 0.5s both,
+    cursor 0.8s step-end infinite;
+}
+
+@keyframes digitar {
+  from { width: 0; }
+  to { width: calc(var(--letras) * 1ch); }
+}
+
+@keyframes cursor {
+  50% { border-color: transparent; }
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin: 1.5rem 0 0;
+  margin: 0.75rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -127,17 +167,13 @@ a {
   padding: 0.6rem 1.15rem;
   border: 1px solid var(--borda);
   border-radius: 999px;
-  background: transparent;
   color: var(--texto);
   font-weight: 600;
   text-decoration: none;
   transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-.botao svg {
-  width: 1.15rem;
-  height: 1.15rem;
-}
+.botao svg { width: 1.15rem; height: 1.15rem; }
 
 .botao:hover {
   border-color: var(--neon);
@@ -145,16 +181,83 @@ a {
   box-shadow: 0 0 14px var(--neon-brilho);
 }
 
-/* ---------- Projetos ---------- */
+/* ---------- Seções ---------- */
 
-.projetos {
-  margin-top: 4rem;
+.secao { margin-top: 4rem; }
+
+.secao h2 { font-size: 1.5rem; }
+
+.secao h2::before {
+  content: "# ";
+  color: var(--neon);
+  font-family: var(--fonte-mono);
+  font-weight: 500;
 }
 
-.projetos h2 {
-  font-size: 1.5rem;
+/* Habilidades */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 
+.chips li {
+  padding: 0.35rem 0.95rem;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--superficie);
+  font-family: var(--fonte-mono);
+  font-size: 0.88rem;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.chips li:hover {
+  border-color: var(--neon);
+  color: var(--neon);
+  box-shadow: 0 0 12px var(--neon-fraco);
+}
+
+/* Linha do tempo */
+.linha-do-tempo {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid var(--borda);
+}
+
+.linha-do-tempo li {
+  position: relative;
+  padding: 0 0 2rem 1.75rem;
+}
+
+.linha-do-tempo li:last-child { padding-bottom: 0; }
+
+.linha-do-tempo li::before {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  left: calc(-0.4rem - 1px);
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid var(--neon);
+  border-radius: 50%;
+  background: var(--fundo);
+  box-shadow: 0 0 10px var(--neon-brilho);
+}
+
+.linha-do-tempo time {
+  color: var(--neon);
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+}
+
+.linha-do-tempo h3 { margin-top: 0.15rem; font-size: 1.1rem; }
+.linha-do-tempo p { margin-top: 0.25rem; color: var(--texto-suave); font-size: 0.98rem; }
+
+/* Projetos */
 .grade {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
@@ -178,14 +281,8 @@ a {
   box-shadow: 0 0 20px var(--neon-fraco);
 }
 
-.projeto h3 {
-  font-size: 1.1rem;
-}
-
-.projeto p {
-  color: var(--texto-suave);
-  font-size: 0.98rem;
-}
+.projeto h3 { font-size: 1.1rem; }
+.projeto p { color: var(--texto-suave); font-size: 0.98rem; }
 
 .projeto a {
   margin-top: auto;
@@ -194,12 +291,7 @@ a {
   text-decoration: none;
 }
 
-.projeto a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-/* ---------- Rodapé ---------- */
+.projeto a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 footer {
   padding: 2rem 1.25rem;
@@ -208,29 +300,36 @@ footer {
   text-align: center;
 }
 
+/* ---------- Seções surgindo ao rolar (navegadores modernos) ---------- */
+
+@supports (animation-timeline: view()) {
+  .revelar {
+    animation: revelar linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 45%;
+  }
+
+  @keyframes revelar {
+    from { opacity: 0; transform: translateY(1.5rem); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
 /* ---------- Celular ---------- */
 
 @media (max-width: 36rem) {
-  main {
-    padding-top: 2.5rem;
-  }
-
-  .cartao {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-    padding: 1.75rem;
-  }
-
-  .projetos {
-    margin-top: 3rem;
-  }
+  main { padding-top: 2.5rem; }
+  .terminal-corpo { padding: 1.5rem 1.35rem 1.9rem; }
+  .secao { margin-top: 3rem; }
 }
 
 /* ---------- Menos movimento ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *, *::before, *::after {
+    animation: none !important;
     transition: none !important;
   }
+
+  .digitando { border-right: 0; }
 }
